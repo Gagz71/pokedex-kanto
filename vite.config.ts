@@ -15,7 +15,7 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "Pokeball1.png"],
       manifest: {
-        name: "Pokédex Let's Go",
+        name: "Pokédex Kanto",
         short_name: "Pokédex",
         description: "Pokédex pour Pokémon Let's Go, Pikachu !",
         lang: "fr",
