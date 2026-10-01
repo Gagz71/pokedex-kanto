@@ -4,6 +4,8 @@ import { TYPE_COLORS, TYPE_LABELS } from "../data/types";
 import { EVOLUTION_ITEMS } from "../data/evolutionItems";
 import { EXCLUSIVE_LABELS } from "../data/exclusives";
 import { MOVE_METHOD_LABELS } from "../data/labels";
+import { KANTO_PLACES } from "../data/kantoPlaces";
+import KantoMap from "./KantoMap";
 import {
   getPokemon,
   setLevel,
@@ -31,6 +33,7 @@ interface PokemonInfoCardProps {
   onSelect: (apiName: string) => void;
   onFilterType: (slug: string) => void;
   onFilterItem: (slug: string) => void;
+  onFilterPlace: (slug: string) => void;
 }
 
 const formatNumber = (n: number) =>
@@ -68,6 +71,7 @@ function PokemonInfoCard({
   onSelect,
   onFilterType,
   onFilterItem,
+  onFilterPlace,
 }: PokemonInfoCardProps) {
   useProgress(); // redessine la fiche quand la progression change
   const mine = getPokemon(pokemon.apiName);
@@ -109,6 +113,12 @@ function PokemonInfoCard({
   const mineScale = Math.max(1, ...Object.values(mine.stats ?? {}));
   const rarity = pokemon.isMythical ? "Fabuleux" : pokemon.isLegendary ? "Légendaire" : null;
   const isFinalStage = pokemon.evolutions.length === 0 && pokemon.evolutionLine.length > 1;
+
+  // Lieux de rencontre regroupés par lieu, dans l'ordre de KANTO_PLACES
+  // (villes, routes, puis grottes et bâtiments)
+  const placeSlugs = Object.keys(KANTO_PLACES).filter((slug) =>
+    pokemon.locations.some((l) => l.place === slug),
+  );
 
   const matchupGroup = (
     label: string,
@@ -272,9 +282,9 @@ function PokemonInfoCard({
                 <div className="where">
                   <span className="fact-label">Où le trouver</span>
                   <div className="where-chips">
-                    {[...new Set(pokemon.locations.map((l) => l.name))].map((name) => (
-                      <button key={name} className="where-chip" onClick={() => onChangeView("lieux")}>
-                        {name}
+                    {placeSlugs.map((slug) => (
+                      <button key={slug} className="where-chip" onClick={() => onChangeView("lieux")}>
+                        {KANTO_PLACES[slug].name}
                       </button>
                     ))}
                   </div>
@@ -498,12 +508,27 @@ function PokemonInfoCard({
                       : "Aucun lieu de rencontre répertorié dans Let's Go Pikachu.")}
                 </p>
               ) : (
-                pokemon.locations.map((loc) => (
-                  <div key={loc.name + loc.details} className="location-item">
-                    <span className="location-region">{loc.name}</span>
-                    <span className="location-details">{loc.details}</span>
-                  </div>
-                ))
+                <>
+                  <KantoMap activePlaces={new Set(placeSlugs)} />
+                  {placeSlugs.map((slug) => (
+                    <div key={slug} className="location-item">
+                      <div className="location-head">
+                        <span className="location-region">{KANTO_PLACES[slug].name}</span>
+                        <button className="item-link" onClick={() => onFilterPlace(slug)}>
+                          Pokémon de ce lieu →
+                        </button>
+                      </div>
+                      {pokemon.locations
+                        .filter((l) => l.place === slug)
+                        .map((l) => (
+                          <span key={l.area + l.details} className="location-details">
+                            {l.area && <b>{l.area} · </b>}
+                            {l.details}
+                          </span>
+                        ))}
+                    </div>
+                  ))}
+                </>
               )}
             </div>
           )}

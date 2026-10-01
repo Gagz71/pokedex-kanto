@@ -1,3 +1,5 @@
+import type { Encounter } from "./data/kantoEncounters";
+
 // Version de Let's Go où un Pokémon est exclusif (voir data/exclusives.ts)
 export type Exclusive = "pikachu" | "eevee" | null;
 
@@ -30,11 +32,6 @@ export interface TypeMatchup {
   type: string;
   slug: string;
   multiplier: number;
-}
-
-export interface LocationInfo {
-  name: string; // nom français du lieu
-  details: string; // « Niv. 3 à 4 · En liberté »
 }
 
 export interface MoveInfo {
@@ -77,6 +74,6 @@ export interface PokemonData {
   resistances: TypeMatchup[];
   immunities: TypeMatchup[];
   strengths: TypeMatchup[];
-  locations: LocationInfo[];
+  locations: Encounter[];
   moves: MoveInfo[];
 }

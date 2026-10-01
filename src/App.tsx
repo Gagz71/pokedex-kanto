@@ -4,6 +4,8 @@ import type { PokedexEntry, PokemonData } from "./types";
 import { fetchIndex, fetchPokemon } from "./api/pokeapi";
 import { TYPE_COLORS, TYPE_LABELS } from "./data/types";
 import { EVOLUTION_ITEMS } from "./data/evolutionItems";
+import { KANTO_PLACES, PLACE_GROUPS } from "./data/kantoPlaces";
+import { KANTO_ENCOUNTERS } from "./data/kantoEncounters";
 import { getPokemon, statTotal, useProgress } from "./stores/progress";
 import { useSync } from "./stores/sync";
 import BookCover from "./components/BookCover";
@@ -87,6 +89,16 @@ function matchesStatus(entry: PokedexEntry, filter: StatusFilter): boolean {
   }
 }
 
+// --- Filtre Lieu : Pokémon qu'on rencontre dans un lieu de Kanto
+const PLACE_MENU = PLACE_GROUPS.map((group) => ({
+  title: group.title,
+  places: Object.entries(KANTO_PLACES).filter(([, place]) => place.kind === group.kind),
+}));
+
+function matchesPlace(apiName: string, place: string): boolean {
+  return (KANTO_ENCOUNTERS[apiName] ?? []).some((e) => e.place === place);
+}
+
 // --- Filtre Objet : Pokémon qu'un objet d'évolution fait évoluer
 const ITEM_GROUPS = (["Pierres", "Objets spéciaux"] as const).map((title) => ({
   title,
@@ -122,6 +134,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilter | null>(null);
+  const [placeFilter, setPlaceFilter] = useState<string | null>(null);
   const [itemFilter, setItemFilter] = useState<string | null>(null);
   const [sortField, setSortField] = useState<SortField>("number");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -193,11 +206,20 @@ function App() {
     setSelectedName(null);
   }
 
+  // Depuis l'onglet Lieux d'une fiche : retour à l'index filtré sur le lieu
+  function handlePlaceFilter(slug: string) {
+    setPlaceFilter(slug);
+    setItemFilter(null);
+    setSearchTerm("");
+    setSelectedName(null);
+  }
+
   // Depuis l'onglet Évolution d'une fiche : retour à l'index filtré sur l'objet
   function handleItemFilter(slug: string) {
     setItemFilter(slug);
     setTypeFilter(null);
     setStatusFilter(null);
+    setPlaceFilter(null);
     setSearchTerm("");
     setSelectedName(null);
   }
@@ -231,6 +253,7 @@ function App() {
   const filteredEntries = sortedEntries.filter(
     (e) =>
       (!typeFilter || e.typeSlugs.includes(typeFilter)) &&
+      (!placeFilter || matchesPlace(e.apiName, placeFilter)) &&
       (!itemFilter || e.apiName in itemNotes) &&
       (!statusFilter || matchesStatus(e, statusFilter)) &&
       (!query || normalize(e.name).includes(query) || String(e.id).includes(query)),
@@ -331,6 +354,38 @@ function App() {
                     }}
                   >
                     {f.label}
+                  </li>
+                ))}
+              </GroupItems>
+            ))}
+          </>
+        )}
+      </Menu>
+
+      <Menu label={placeFilter ? KANTO_PLACES[placeFilter].name : "Lieu"}>
+        {(close) => (
+          <>
+            <li
+              className={!placeFilter ? "active" : ""}
+              onClick={() => {
+                setPlaceFilter(null);
+                close();
+              }}
+            >
+              Tous les lieux
+            </li>
+            {PLACE_MENU.map((group) => (
+              <GroupItems key={group.title} title={group.title}>
+                {group.places.map(([slug, place]) => (
+                  <li
+                    key={slug}
+                    className={placeFilter === slug ? "active" : ""}
+                    onClick={() => {
+                      setPlaceFilter(slug);
+                      close();
+                    }}
+                  >
+                    {place.name}
                   </li>
                 ))}
               </GroupItems>
@@ -529,6 +584,7 @@ function App() {
                     onSelect={handleSelect}
                     onFilterType={handleTypeFilter}
                     onFilterItem={handleItemFilter}
+                    onFilterPlace={handlePlaceFilter}
                   />
                 )}
           </div>

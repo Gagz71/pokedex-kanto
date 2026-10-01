@@ -25,6 +25,20 @@ function CreditsPanel({ onClose }: CreditsPanelProps) {
           capacités, évolutions, lieux de rencontre, descriptions du Pokédex et
           illustrations officielles.
         </li>
+        <li>
+          <a href="https://www.pokepedia.fr" target="_blank" rel="noopener">
+            Poképédia
+          </a>{" "}
+          — carte de Kanto de Let's Go. Contenu sous licence{" "}
+          <a
+            href="https://creativecommons.org/licenses/by-nc-sa/3.0/deed.fr"
+            target="_blank"
+            rel="noopener"
+          >
+            CC BY-NC-SA 3.0
+          </a>
+          .
+        </li>
       </ul>
 
       <h3>Conception et développement</h3>

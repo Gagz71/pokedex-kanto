@@ -2,7 +2,6 @@ import type {
   EvolutionInfo,
   EvolutionStage,
   EvoLink,
-  LocationInfo,
   MoveInfo,
   PokedexEntry,
   PokemonData,
@@ -11,11 +10,8 @@ import type {
 import { TYPE_LABELS } from "../data/types";
 import { findItemUse } from "../data/evolutionItems";
 import { getExclusive } from "../data/exclusives";
-import {
-  DAMAGE_CLASS_LABELS,
-  ENCOUNTER_METHOD_LABELS,
-  STAT_LABELS,
-} from "../data/labels";
+import { DAMAGE_CLASS_LABELS, STAT_LABELS } from "../data/labels";
+import { KANTO_ENCOUNTERS } from "../data/kantoEncounters";
 
 const API = "https://pokeapi.co/api/v2";
 const LETS_GO_GROUP = "lets-go-pikachu-lets-go-eevee";
@@ -100,20 +96,6 @@ interface ApiChainNode {
   species: NamedResource;
   evolution_details: ApiEvolutionDetail[];
   evolves_to: ApiChainNode[];
-}
-interface ApiEncounter {
-  location_area: NamedResource;
-  version_details: {
-    version: NamedResource;
-    encounter_details: {
-      min_level: number;
-      max_level: number;
-      method: NamedResource;
-    }[];
-  }[];
-}
-interface ApiLocationArea {
-  names: Translated[];
 }
 
 async function getJson<T>(url: string): Promise<T> {
@@ -369,39 +351,6 @@ async function fetchMoves(pokemon: ApiPokemon): Promise<MoveInfo[]> {
     );
 }
 
-// Lieux de rencontre dans Let's Go Pikachu, un appel par lieu pour son nom
-// français.
-async function fetchLocations(pokemonId: number): Promise<LocationInfo[]> {
-  const encounters = await getJson<ApiEncounter[]>(
-    `${API}/pokemon/${pokemonId}/encounters`,
-  );
-  const inPikachu = encounters.flatMap((e) =>
-    e.version_details
-      .filter((v) => v.version.name === LETS_GO_PIKACHU)
-      .map((v) => ({ area: e.location_area, details: v.encounter_details })),
-  );
-  const areas = await Promise.all(
-    inPikachu.map((e) => getJson<ApiLocationArea>(e.area.url)),
-  );
-
-  return inPikachu.map((e, i) => {
-    const min = Math.min(...e.details.map((d) => d.min_level));
-    const max = Math.max(...e.details.map((d) => d.max_level));
-    const methods = [
-      ...new Set(
-        e.details.map(
-          (d) => ENCOUNTER_METHOD_LABELS[d.method.name] ?? d.method.name,
-        ),
-      ),
-    ];
-    const level = min === max ? `Niv. ${min}` : `Niv. ${min} à ${max}`;
-    return {
-      name: getFrenchName(areas[i].names) || e.area.name,
-      details: [level, ...methods].join(" · "),
-    };
-  });
-}
-
 export async function fetchPokemon(
   apiName: string,
   index: PokedexEntry[],
@@ -415,11 +364,10 @@ export async function fetchPokemon(
   // Tant que l'index n'est pas chargé, on ne filtre pas la lignée.
   const inDex = (name: string) => dexNames.size === 0 || dexNames.has(name);
 
-  const [typeResponses, evolution, moves, locations] = await Promise.all([
+  const [typeResponses, evolution, moves] = await Promise.all([
     Promise.all(pokemon.types.map((t) => getJson<ApiType>(t.type.url))),
     fetchEvolutions(species.evolution_chain.url, apiName, inDex),
     fetchMoves(pokemon),
-    fetchLocations(pokemon.id),
   ]);
 
   const entry = index.find((e) => e.apiName === apiName);
@@ -447,7 +395,8 @@ export async function fetchPokemon(
     description: getFrenchDescription(species.flavor_text_entries),
     ...evolution,
     ...computeTypeMatchups(typeResponses),
-    locations,
+    // Lieux de rencontre : données générées (scripts/fetch-encounters.mjs)
+    locations: KANTO_ENCOUNTERS[apiName] ?? [],
     moves,
   };
 }

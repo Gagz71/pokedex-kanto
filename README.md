@@ -31,6 +31,7 @@ s'empilent.
 - **Type** : les 18 types, avec leur couleur.
 - **Statut** : vus, capturés, chromatiques, ceux qui ont évolué, les
   **exclusifs Let's Go Pikachu / Évoli**, les légendaires et fabuleux.
+- **Lieu** : tous les Pokémon d'une ville, d'une route ou d'une grotte.
 - **Objet** : à qui sert une Pierre Feu, Eau, Foudre, Plante ou Lune, ou les
   Bonbons Meltan.
 - **Tri** : par numéro, par ordre alphabétique, par niveau ou par total des
@@ -43,7 +44,7 @@ s'empilent.
 | **Stats** | Stats de base, ou celles de ton Pokémon que tu recopies depuis le jeu |
 | **Type** | Faiblesses, résistances, immunités et types contre lesquels il est fort |
 | **Évolution** | La lignée complète et comment évoluer (niveau, pierre, échange…) |
-| **Lieux** | Où le trouver dans Let's Go Pikachu, avec les niveaux |
+| **Lieux** | La carte de Kanto avec ses lieux de rencontre, et pour chacun les étages, les niveaux et le mode de rencontre |
 | **Capacités** | Capacités apprises par niveau et par CT, avec puissance, précision et PP |
 
 ### ✅ Le suivi de ta partie
@@ -102,14 +103,23 @@ src/
 │   ├── progress.ts      # progression de la partie (localStorage)
 │   └── sync.ts          # synchronisation Supabase
 ├── components/          # couverture, index, fiche, équipe, panneaux…
-└── data/                # types, objets d'évolution, exclusivités, libellés
+└── data/                # types, objets, exclusivités, lieux et carte de Kanto
+scripts/
+└── fetch-encounters.mjs # génère data/kantoEncounters.ts depuis PokeAPI
 ```
+
+Les lieux de rencontre sont générés une fois pour toutes (le filtre Lieu
+reste instantané et l'onglet Lieux marche hors ligne). Pour les mettre à
+jour : `node scripts/fetch-encounters.mjs`.
 
 ---
 
 ## 🙏 Crédits
 
-Données, textes du Pokédex et illustrations : [PokeAPI](https://pokeapi.co).
+- Données, lieux de rencontre, textes du Pokédex et illustrations :
+  [PokeAPI](https://pokeapi.co).
+- Carte de Kanto de Let's Go : [Poképédia](https://www.pokepedia.fr)
+  (licence [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/deed.fr)).
 
 **Projet de fan non officiel**, gratuit et sans but commercial. Pokémon ainsi
 que les noms, images et marques associés sont la propriété de Nintendo,

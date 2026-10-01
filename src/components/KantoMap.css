@@ -1,0 +1,127 @@
+.kanto-map-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+.kanto-map {
+  display: block;
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 3px 10px -3px rgba(0, 0, 0, 0.35);
+}
+.map-pin {
+  fill: rgba(255, 255, 255, 0.75);
+  stroke: rgba(0, 0, 0, 0.45);
+  stroke-width: 2;
+  cursor: pointer;
+}
+.map-pin:hover {
+  fill: #fff;
+}
+.map-pin.active {
+  fill: #e0393e;
+  stroke: #fff;
+  stroke-width: 4;
+  filter: drop-shadow(0 0 4px rgba(224, 57, 62, 0.9));
+}
+.map-pin.active:hover {
+  fill: #ff5a5f;
+}
+.map-tooltip {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+.map-hint {
+  margin: 0 0 4px;
+  font-size: 11px;
+  font-style: italic;
+  text-align: center;
+  color: #5b6373;
+}
+
+/* Gros plan sur un lieu */
+.map-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.75);
+  cursor: pointer;
+}
+.map-crop {
+  position: relative;
+  width: min(94vw, 900px);
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #1b4f8a;
+  cursor: default;
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.6);
+}
+/* La carte agrandie, décalée pour que le lieu tombe au centre du cadre */
+.map-crop img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--crop-zoom) * 100%);
+  max-width: none;
+  height: auto;
+  transform: translate(calc(-1 * var(--crop-cx)), calc(-1 * var(--crop-cy)));
+}
+.map-crop-pin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  border-radius: 50%;
+  background: #e0393e;
+  border: 3px solid #fff;
+  box-shadow: 0 0 10px rgba(224, 57, 62, 0.9);
+}
+.map-crop-title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 14px 16px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+.map-lightbox-close {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: none;
+  background: #fff;
+  color: #1a1a1a;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .map-crop {
+    aspect-ratio: 4 / 3;
+  }
+}
