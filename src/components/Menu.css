@@ -1,0 +1,99 @@
+.menu {
+  position: relative;
+}
+.menu-toggle {
+  border: 1px solid var(--border);
+  background: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-2);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+.arrow.open {
+  transform: rotate(180deg);
+}
+.menu-options {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  list-style: none;
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+  z-index: 4;
+  min-width: 180px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.menu-options li {
+  padding: 9px 12px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.menu-options li:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+.menu-options li.active {
+  background: var(--accent);
+  color: #fff;
+}
+/* Titre de section dans un menu (non cliquable) */
+.menu-options li.menu-group {
+  padding: 8px 12px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-2);
+  cursor: default;
+  pointer-events: none;
+}
+.menu-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.menu-sprite {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  image-rendering: pixelated;
+}
+
+/* Écran étroit : menus ancrés sur toute la largeur de la barre d'outils
+   (sinon ceux de la 2e ligne sortent de l'écran à gauche). La barre
+   d'outils doit être en position: relative. */
+@media (max-width: 959px) {
+  .menu {
+    position: static;
+  }
+  .menu-options {
+    left: 0;
+    right: 0;
+    min-width: 0;
+    max-height: 60vh;
+  }
+}

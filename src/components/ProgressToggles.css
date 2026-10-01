@@ -1,0 +1,155 @@
+.progress-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.progress-toggles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.toggle {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 7px 2px;
+  border-radius: 10px;
+  border: 1.5px solid #c9d6bd;
+  background: #fff;
+  color: #6b7a62;
+  cursor: pointer;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.toggle:hover {
+  border-color: #9aa894;
+}
+.toggle-icon {
+  font-size: 15px;
+  line-height: 1;
+  opacity: 0.45;
+}
+.toggle.on {
+  color: #fff;
+}
+.toggle.on .toggle-icon {
+  opacity: 1;
+}
+.toggle.seen.on {
+  background: #5b7aa8;
+  border-color: #5b7aa8;
+}
+.toggle.caught.on {
+  background: #c62f2f;
+  border-color: #c62f2f;
+}
+.toggle.shiny.on {
+  background: linear-gradient(135deg, #7b5cd6, #d65cb4);
+  border-color: #9a5cc8;
+}
+
+.team-block {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.team-status,
+.team-full {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #3d4fc4;
+}
+.team-full {
+  color: #6b7a62;
+}
+.team-button {
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 7px 6px;
+  border-radius: 10px;
+  border: 1.5px dashed #9aa894;
+  background: transparent;
+  color: #4a5a40;
+  cursor: pointer;
+}
+.team-button:hover {
+  border-style: solid;
+  background: #fff;
+}
+
+.evolve-block {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.evolve-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #2f7a4f;
+}
+.evolve-status .link {
+  font: inherit;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #3d4fc4;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.evolve-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: 5px;
+}
+/* Évoli : une grille de noms */
+.evolve-actions.many {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.evolve-label {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  font-weight: 700;
+  color: #2f7a4f;
+}
+.evolve-button {
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 7px 4px;
+  border-radius: 10px;
+  border: 1.5px dashed #8fc0a2;
+  background: transparent;
+  color: #2f7a4f;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.evolve-button:hover {
+  border-style: solid;
+  background: #eef8f1;
+}
+
+/* Petits téléphones (360 px) */
+@media (max-width: 400px) {
+  .progress-toggles {
+    gap: 4px;
+  }
+  .toggle {
+    font-size: 11px;
+    padding: 7px 0;
+  }
+}

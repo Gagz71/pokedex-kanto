@@ -1,0 +1,298 @@
+.scene {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+  perspective: 1800px;
+  width: 100%;
+}
+
+/* Fermé : une page de large (la couverture). Ouvert : deux pages. */
+.book {
+  position: relative;
+  width: var(--page-w);
+  height: var(--page-h);
+  transition:
+    width 0.7s cubic-bezier(0.4, 0.1, 0.2, 1),
+    height 0.7s cubic-bezier(0.4, 0.1, 0.2, 1);
+}
+.book.open {
+  width: calc(var(--page-w) * 2);
+}
+
+.page {
+  position: absolute;
+  top: 0;
+  width: var(--page-w);
+  height: var(--page-h);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 22px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.page-left {
+  left: 0;
+  border-radius: 6px 0 0 6px;
+}
+.page-right {
+  left: 0;
+  border-radius: 0 6px 6px 0;
+  border-left: none;
+}
+
+/* La page de droite se dévoile en même temps que le livre s'élargit */
+.page-right-mask {
+  position: absolute;
+  top: 0;
+  left: var(--page-w);
+  width: 0;
+  height: var(--page-h);
+  overflow: hidden;
+  transition: width 0.7s cubic-bezier(0.4, 0.1, 0.2, 1);
+}
+.book.open .page-right-mask {
+  width: var(--page-w);
+}
+
+/* Reliure entre les deux pages */
+.spine {
+  position: absolute;
+  left: calc(var(--page-w) - 3px);
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.14),
+    rgba(0, 0, 0, 0.02) 40%,
+    rgba(0, 0, 0, 0.02) 60%,
+    rgba(0, 0, 0, 0.14)
+  );
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.book.open .spine {
+  opacity: 1;
+  transition-delay: 0.3s;
+}
+
+/* --- Navigation */
+
+.nav-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.index-nav {
+  flex-shrink: 0;
+  margin-bottom: 12px;
+}
+.close-tab {
+  display: block;
+  margin: 0 0 14px auto;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+}
+.close-tab:hover {
+  color: var(--accent);
+}
+.nav-row .close-tab {
+  margin: 0;
+}
+/* Sur la carte d'illustration (fond clair, même en mode sombre) */
+.art-nav .close-tab {
+  color: #3a4a3a;
+}
+.art-nav .close-tab:hover {
+  color: #1a3d1a;
+}
+.close-tab.prev-evo {
+  margin: 0 0 14px;
+}
+.close-tab.shiny-switch.on {
+  color: #9a5cc8;
+}
+
+/* Pastille d'état : grise hors connexion, verte synchronisé, orange en
+   cours ou hors ligne, rouge en erreur */
+.sync-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+}
+.sync-button:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.sync-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #9aa1b4;
+}
+.sync-button.ok .sync-dot {
+  background: var(--hp-ok);
+}
+.sync-button.syncing .sync-dot,
+.sync-button.offline .sync-dot {
+  background: var(--hp-mid);
+}
+.sync-button.error .sync-dot {
+  background: var(--hp-low);
+}
+
+/* --- Index */
+
+.index-toolbar {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.search-input {
+  flex: 1 1 140px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--surface);
+}
+
+.progress-summary {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 0 0 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+.progress-summary b {
+  margin-right: 2px;
+}
+.c-seen {
+  color: #5b7aa8;
+}
+.c-caught {
+  color: #c62f2f;
+}
+.c-shiny {
+  color: #9a5cc8;
+}
+
+.page-title {
+  flex-shrink: 0;
+  margin: 10px 0 0;
+  font-size: 11.5px;
+  text-align: center;
+  color: var(--text-2);
+}
+.credits-link {
+  flex-shrink: 0;
+  align-self: center;
+  margin-top: 4px;
+  padding: 4px 8px;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 11.5px;
+  color: var(--text-2);
+  cursor: pointer;
+}
+.credits-link:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.status {
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+/* Écran trop étroit pour montrer les deux pages côte à côte (téléphone,
+   tablette en portrait) : les pages s'empilent dans le flux normal, pleine
+   largeur. Sur l'index, la liste tient entière sur la page de gauche et la
+   page de droite est masquée ; sur une fiche, l'illustration est au-dessus
+   et la fiche en dessous. Même seuil que NARROW_QUERY dans App.tsx. */
+@media (max-width: 959px) {
+  .scene {
+    padding: 12px;
+  }
+  .book.open {
+    width: var(--page-w);
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .book.open .page,
+  .book.open .page-right-mask {
+    position: relative;
+    left: 0;
+  }
+  .page {
+    padding: 14px;
+  }
+  .page-right-mask {
+    left: 0;
+    width: var(--page-w);
+    transition: none;
+  }
+  .book.open .page-right-mask {
+    width: var(--page-w);
+    height: var(--page-h);
+  }
+  .book.open:not(.has-pokemon) .page-right-mask {
+    display: none;
+  }
+  .book.has-pokemon .page-left {
+    height: auto;
+    overflow: visible;
+  }
+  .page-left,
+  .page-right {
+    border-radius: 6px;
+    border-left: 1px solid var(--border);
+  }
+  .spine {
+    display: none;
+  }
+
+  /* Menus : ancrés sur toute la largeur de la barre d'outils (voir Menu.css) */
+  .index-toolbar {
+    position: relative;
+  }
+
+  /* 16 px minimum : en dessous, l'iPhone zoome sur le champ dès qu'on le
+     touche, et ne dézoome pas ensuite. */
+  .search-input {
+    font-size: 16px;
+  }
+}

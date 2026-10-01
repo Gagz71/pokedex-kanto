@@ -1,0 +1,166 @@
+.cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--page-w);
+  height: var(--page-h);
+  transform-origin: left center;
+  transform: rotateY(0deg);
+  transition:
+    transform 0.7s cubic-bezier(0.4, 0.1, 0.2, 1),
+    visibility 0s;
+  backface-visibility: hidden;
+  cursor: pointer;
+  border-radius: 6px 14px 14px 6px;
+  background: linear-gradient(
+    155deg,
+    #e0393e 0%,
+    var(--cover) 45%,
+    var(--cover-shade) 100%
+  );
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 26px 20px 20px;
+  overflow: hidden;
+  z-index: 3;
+}
+.cover.open {
+  transform: rotateY(-150deg);
+  pointer-events: none;
+  /* Une fois l'animation finie, la couverture pivotée est masquée : sinon
+     elle déborde (invisible) à gauche de l'écran sur téléphone. */
+  visibility: hidden;
+  transition:
+    transform 0.7s cubic-bezier(0.4, 0.1, 0.2, 1),
+    visibility 0s 0.7s;
+}
+
+/* Reflet de lumière sur la couverture */
+.cover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(255, 255, 255, 0) 32%
+  );
+  pointer-events: none;
+}
+
+.indicator-dots {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  display: flex;
+  gap: 6px;
+}
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+.dot.a {
+  background: #fca5a5;
+  box-shadow: 0 0 5px rgba(252, 165, 165, 0.9);
+}
+.dot.b {
+  background: #86efac;
+  box-shadow: 0 0 5px rgba(134, 239, 172, 0.9);
+}
+
+/* Bloc central : la Poké Ball prend l'essentiel de la couverture */
+.hero {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.pokeball-ring {
+  width: min(62%, 52vh);
+  aspect-ratio: 1;
+  padding: 10px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.18);
+  box-shadow:
+    0 0 0 5px rgba(255, 255, 255, 0.14),
+    0 0 0 9px rgba(0, 0, 0, 0.22),
+    0 22px 40px -12px rgba(0, 0, 0, 0.55);
+}
+.pokeball {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
+}
+
+.title {
+  margin: 12px 0 0;
+  font-family: "Chakra Petch", sans-serif;
+  font-size: clamp(30px, 4.4vw, 50px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 0.03em;
+  color: #fff;
+  text-align: center;
+  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
+}
+
+.trim {
+  width: 38%;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--cover-trim);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.subtitle {
+  margin: 0;
+  max-width: 85%;
+  font-size: clamp(13px, 1.5vw, 17px);
+  font-weight: 500;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.88);
+  text-align: center;
+}
+.subtitle b {
+  font-weight: 700;
+  color: var(--cover-trim);
+  white-space: nowrap;
+}
+
+.groove {
+  width: 65%;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.28);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.hint {
+  margin: 10px 0 0;
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* Signature discrète, coin inférieur droit */
+.signature {
+  position: absolute;
+  bottom: 10px;
+  right: 14px;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+}

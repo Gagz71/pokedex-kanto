@@ -1,0 +1,72 @@
+:root {
+  --bg: #f2f4f8;
+  --surface: #ffffff;
+  --surface-2: #eaedf3;
+  --border: #dbe0e9;
+  --text: #1a1d27;
+  --text-2: #5b6373;
+  --accent: #3d4fc4;
+  --hp-ok: #2f9e5b;
+  --hp-mid: #d97706;
+  --hp-low: #a8323f;
+  --shadow: 0 0 2px rgba(20, 23, 40, 0.06), 0 0 24px -8px rgba(20, 23, 40, 0.18);
+  --cover: #c1272d;
+  --cover-shade: #8a1a1f;
+  --cover-trim: #f4c945;
+
+  /* Taille d'une page du livre. Écran large : deux pages côte à côte qui
+     tiennent dans la largeur, hauteur calée sur celle de l'écran. */
+  --page-w: min(700px, calc((100vw - 72px) / 2));
+  --page-h: clamp(560px, calc(100dvh - 80px), 780px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12141b;
+    --surface: #1a1d27;
+    --surface-2: #212430;
+    --border: #2c303e;
+    --text: #edeef3;
+    --text-2: #9aa1b4;
+    --accent: #8b97f0;
+    --hp-ok: #3fb96e;
+    --hp-mid: #e0900f;
+    --hp-low: #c2570f;
+    --shadow: 0 0 2px rgba(0, 0, 0, 0.4), 0 0 30px -10px rgba(0, 0, 0, 0.6);
+    --cover: #9c2126;
+    --cover-shade: #611318;
+    --cover-trim: #e0b430;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  /* Pas de zoom au double appui ; le zoom à deux doigts reste possible. */
+  touch-action: manipulation;
+  /* Pas d'agrandissement automatique du texte en mode paysage sur iPhone */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  padding-block: 16px;
+}
+
+/* Téléphone / tablette en portrait : une page pleine largeur, presque toute
+   la hauteur de l'écran (voir la media query de App.css). */
+@media (max-width: 959px) {
+  :root {
+    --page-w: min(700px, calc(100vw - 24px));
+    --page-h: calc(100dvh - 24px);
+  }
+  body {
+    padding-block: 0;
+  }
+}

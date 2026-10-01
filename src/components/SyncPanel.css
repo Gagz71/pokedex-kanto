@@ -1,0 +1,105 @@
+.sync-help {
+  color: var(--text-2);
+}
+.sync-status {
+  font-weight: 700;
+}
+.sync-status.ok {
+  color: var(--hp-ok);
+}
+.sync-status.error {
+  color: var(--hp-low);
+}
+.sync-status.offline,
+.sync-status.syncing {
+  color: var(--hp-mid);
+}
+.sync-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  background: var(--surface-2);
+}
+.sync-tabs button {
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+}
+.sync-tabs button.active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+.sync-info {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #e6f4ea;
+  color: #1e5b2f;
+  font-size: 13px;
+}
+.sync-error {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #fde8e8;
+  color: #9b1c1c;
+  font-size: 13px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-2);
+}
+.field input {
+  font: inherit;
+  font-size: 16px; /* 16 px : évite le zoom automatique de Safari sur iPhone */
+  font-weight: 400;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+.sync-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.sync-actions button {
+  font: inherit;
+  font-weight: 700;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+}
+.sync-actions button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.sync-actions button.link {
+  border: none;
+  background: none;
+  padding: 10px 4px;
+  font-weight: 600;
+  color: var(--accent);
+}
+.sync-actions button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
