@@ -1,4 +1,4 @@
-import { useState, type CSSProperties, type FormEvent } from "react";
+import { useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
 import type { PokemonData, TypeMatchup } from "../types";
 import { TYPE_COLORS, TYPE_LABELS } from "../data/types";
 import { EVOLUTION_ITEMS } from "../data/evolutionItems";
@@ -6,6 +6,7 @@ import { EXCLUSIVE_LABELS } from "../data/exclusives";
 import { MOVE_METHOD_LABELS } from "../data/labels";
 import { KANTO_PLACES } from "../data/kantoPlaces";
 import KantoMap from "./KantoMap";
+import type { AlolanData } from "../types";
 import {
   getPokemon,
   setLevel,
@@ -77,7 +78,7 @@ function PokemonInfoCard({
   const mine = getPokemon(pokemon.apiName);
   const accent = TYPE_COLORS[pokemon.typeSlugs[0]] ?? "#A8A77A";
 
-  const [statsMode, setStatsMode] = useState<"base" | "mine">("base");
+  const [statsMode, setStatsMode] = useState<"base" | "alola" | "mine">("base");
   const [editingLevel, setEditingLevel] = useState(false);
   const [levelDraft, setLevelDraft] = useState(1);
   const [levelHint, setLevelHint] = useState(false);
@@ -108,7 +109,10 @@ function PokemonInfoCard({
     setStat(pokemon.apiName, stat, raw.trim() === "" ? null : Number(raw));
   }
 
-  const baseTotal = pokemon.stats.reduce((sum, s) => sum + s.value, 0);
+  // Stats de base de la forme affichée (Kanto, ou Alola dans l'onglet Stats)
+  const baseStats =
+    statsMode === "alola" && pokemon.alolan ? pokemon.alolan.stats : pokemon.stats;
+  const baseTotal = baseStats.reduce((sum, s) => sum + s.value, 0);
   // Échelle des barres de mes stats : la plus haute valeur saisie
   const mineScale = Math.max(1, ...Object.values(mine.stats ?? {}));
   const rarity = pokemon.isMythical ? "Fabuleux" : pokemon.isLegendary ? "Légendaire" : null;
@@ -116,8 +120,12 @@ function PokemonInfoCard({
 
   // Lieux de rencontre regroupés par lieu, dans l'ordre de KANTO_PLACES
   // (villes, routes, puis grottes et bâtiments)
-  const placeSlugs = Object.keys(KANTO_PLACES).filter((slug) =>
-    pokemon.locations.some((l) => l.place === slug),
+  // et lieu de l'échange de la forme d'Alola (s'il a lieu dans Let's Go
+  // Pikachu)
+  const trade = pokemon.alolan?.source.trade;
+  const tradePlace = trade && !trade.eeveeOnly ? trade.place : null;
+  const placeSlugs = Object.keys(KANTO_PLACES).filter(
+    (slug) => slug === tradePlace || pokemon.locations.some((l) => l.place === slug),
   );
 
   const matchupGroup = (
@@ -245,6 +253,16 @@ function PokemonInfoCard({
                 <p className="dex-text">{pokemon.description}</p>
               </div>
 
+              {pokemon.alolan && (
+                <AlolanBlock alolan={pokemon.alolan} kantoName={pokemon.name}>
+                  {pokemon.alolan.source.evolvesFrom?.itemSlug &&
+                    itemCondition(
+                      pokemon.alolan.source.evolvesFrom.condition,
+                      pokemon.alolan.source.evolvesFrom.itemSlug,
+                    )}
+                </AlolanBlock>
+              )}
+
               <div className="facts">
                 <div className="fact">
                   <span className="fact-label">Taille</span>
@@ -278,7 +296,7 @@ function PokemonInfoCard({
                 </div>
               </div>
 
-              {pokemon.locations.length > 0 && (
+              {placeSlugs.length > 0 && (
                 <div className="where">
                   <span className="fact-label">Où le trouver</span>
                   <div className="where-chips">
@@ -302,8 +320,18 @@ function PokemonInfoCard({
                   className={statsMode === "base" ? "active" : ""}
                   onClick={() => setStatsMode("base")}
                 >
-                  Base
+                  {pokemon.alolan ? "Kanto" : "Base"}
                 </button>
+                {pokemon.alolan && (
+                  <button
+                    role="tab"
+                    aria-selected={statsMode === "alola"}
+                    className={statsMode === "alola" ? "active" : ""}
+                    onClick={() => setStatsMode("alola")}
+                  >
+                    Alola
+                  </button>
+                )}
                 <button
                   role="tab"
                   aria-selected={statsMode === "mine"}
@@ -314,9 +342,9 @@ function PokemonInfoCard({
                 </button>
               </div>
 
-              {statsMode === "base" ? (
+              {statsMode !== "mine" ? (
                 <>
-                  {pokemon.stats.map((stat) => (
+                  {baseStats.map((stat) => (
                     <div key={stat.name} className="stat-row">
                       <div className="stat-head">
                         <span className="stat-name">{stat.name}</span>
@@ -498,7 +526,7 @@ function PokemonInfoCard({
 
           {view === "lieux" && (
             <div className="locations">
-              {pokemon.locations.length === 0 ? (
+              {placeSlugs.length === 0 ? (
                 <p className="soon">
                   {SPECIAL_SOURCES[pokemon.apiName] ??
                     (pokemon.exclusive === "eevee"
@@ -526,6 +554,12 @@ function PokemonInfoCard({
                             {l.details}
                           </span>
                         ))}
+                      {trade && slug === tradePlace && (
+                        <span className="location-details">
+                          <b className="alolan-tag">Forme d'Alola</b> Échange
+                          contre un {trade.give} · Niv. {trade.level}
+                        </span>
+                      )}
                     </div>
                   ))}
                 </>
@@ -568,6 +602,69 @@ function PokemonInfoCard({
             </div>
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+// Bloc « Forme d'Alola » de l'onglet Accueil : illustration, types et
+// comment l'obtenir dans Let's Go Pikachu. children : condition d'évolution
+// avec lien vers l'objet (Pierre Glace), quand il y en a une.
+function AlolanBlock({
+  alolan,
+  kantoName,
+  children,
+}: {
+  alolan: AlolanData;
+  kantoName: string;
+  children?: ReactNode;
+}) {
+  const { trade, evolvesFrom } = alolan.source;
+  const elsewhere =
+    "Dans Let's Go Pikachu : par échange avec un joueur de Let's Go Évoli, ou depuis Pokémon GO.";
+
+  let how: ReactNode;
+  if (trade && !trade.eeveeOnly) {
+    how = (
+      <>
+        Échange à <b>{KANTO_PLACES[trade.place].name}</b> : donne un {trade.give},
+        reçois un {alolan.name} (niv. {trade.level}).
+      </>
+    );
+  } else if (trade) {
+    how = (
+      <>
+        Échange proposé seulement dans Let's Go Évoli ({KANTO_PLACES[trade.place].name}).{" "}
+        {elsewhere}
+      </>
+    );
+  } else if (evolvesFrom) {
+    how = (
+      <>
+        En faisant évoluer {alolan.evolvesFromName} : {children ?? evolvesFrom.condition.toLowerCase()}.
+        {!alolan.inPikachu && <> {elsewhere}</>}
+      </>
+    );
+  }
+
+  return (
+    <div className="alolan-block">
+      <img src={alolan.sprite} alt={alolan.name} />
+      <div className="alolan-text">
+        <span className="fact-label">Forme d'Alola</span>
+        <span className="alolan-name">{alolan.name}</span>
+        <div className="alolan-types">
+          {alolan.typeSlugs.map((slug) => (
+            <span key={slug} className="move-type-badge" style={{ background: TYPE_COLORS[slug] }}>
+              {TYPE_LABELS[slug]}
+            </span>
+          ))}
+        </div>
+        <p className="alolan-how">{how}</p>
+        <p className="alolan-note">
+          Même numéro de Pokédex que {kantoName} : une seule case à cocher pour
+          les deux formes.
+        </p>
       </div>
     </div>
   );

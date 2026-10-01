@@ -6,6 +6,7 @@ import { TYPE_COLORS, TYPE_LABELS } from "./data/types";
 import { EVOLUTION_ITEMS } from "./data/evolutionItems";
 import { KANTO_PLACES, PLACE_GROUPS } from "./data/kantoPlaces";
 import { KANTO_ENCOUNTERS } from "./data/kantoEncounters";
+import { ALOLAN_FORMS } from "./data/alolanForms";
 import { getPokemon, statTotal, useProgress } from "./stores/progress";
 import { useSync } from "./stores/sync";
 import BookCover from "./components/BookCover";
@@ -20,7 +21,7 @@ import CreditsPanel from "./components/CreditsPanel";
 import SyncPanel from "./components/SyncPanel";
 
 function normalize(str: string): string {
-  return str.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
 // Écran étroit (téléphone, tablette en portrait) : une seule page visible,
@@ -38,7 +39,8 @@ type StatusFilter =
   | "evolved"
   | "pikachu"
   | "eevee"
-  | "legendary";
+  | "legendary"
+  | "alolan";
 
 const STATUS_GROUPS: { title: string; filters: { value: StatusFilter; label: string }[] }[] = [
   {
@@ -60,8 +62,11 @@ const STATUS_GROUPS: { title: string; filters: { value: StatusFilter; label: str
     ],
   },
   {
-    title: "Rareté",
-    filters: [{ value: "legendary", label: "Légendaires et fabuleux" }],
+    title: "Catégorie",
+    filters: [
+      { value: "legendary", label: "Légendaires et fabuleux" },
+      { value: "alolan", label: "Ont une forme d'Alola" },
+    ],
   },
 ];
 const STATUS_FILTERS = STATUS_GROUPS.flatMap((g) => g.filters);
@@ -86,6 +91,8 @@ function matchesStatus(entry: PokedexEntry, filter: StatusFilter): boolean {
       return entry.exclusive === filter;
     case "legendary":
       return entry.isLegendary || entry.isMythical;
+    case "alolan":
+      return entry.apiName in ALOLAN_FORMS;
   }
 }
 
@@ -95,8 +102,17 @@ const PLACE_MENU = PLACE_GROUPS.map((group) => ({
   places: Object.entries(KANTO_PLACES).filter(([, place]) => place.kind === group.kind),
 }));
 
+// Échange de forme d'Alola proposé dans ce lieu (dans Let's Go Pikachu)
+function alolanTradeAt(apiName: string, place: string) {
+  const trade = ALOLAN_FORMS[apiName]?.trade;
+  return trade && !trade.eeveeOnly && trade.place === place ? trade : undefined;
+}
+
 function matchesPlace(apiName: string, place: string): boolean {
-  return (KANTO_ENCOUNTERS[apiName] ?? []).some((e) => e.place === place);
+  return (
+    (KANTO_ENCOUNTERS[apiName] ?? []).some((e) => e.place === place) ||
+    !!alolanTradeAt(apiName, place)
+  );
 }
 
 // --- Filtre Objet : Pokémon qu'un objet d'évolution fait évoluer
@@ -146,6 +162,7 @@ function App() {
   const [pokemonError, setPokemonError] = useState<string | null>(null);
   const [infoView, setInfoView] = useState<InfoView>("accueil");
   const [showShiny, setShowShiny] = useState(false);
+  const [showAlolan, setShowAlolan] = useState(false);
   // Numéro de la dernière fiche demandée : si on clique vite sur deux
   // Pokémon, on ignore la réponse de la première.
   const requestRef = useRef(0);
@@ -178,6 +195,7 @@ function App() {
     const request = ++requestRef.current;
     setSelectedName(apiName);
     setShowShiny(false);
+    setShowAlolan(false);
     setPokemon(null);
     setPokemonError(null);
     setIsLoadingPokemon(true);
@@ -242,11 +260,19 @@ function App() {
     return sortDirection === "asc" ? result : -result;
   });
 
-  // « → Aquali » à côté de chaque Pokémon concerné par l'objet choisi
+  // Notes à côté des Pokémon de l'index : « → Aquali » pour l'objet choisi,
+  // « Forme d'Alola par échange » pour le lieu choisi
   const itemNotes: Record<string, string> = {};
   for (const use of (itemFilter && EVOLUTION_ITEMS[itemFilter]?.uses) || []) {
     const note = `→ ${use.toName}${use.note ? ` (${use.note})` : ""}`;
     itemNotes[use.from] = itemNotes[use.from] ? `${itemNotes[use.from]} · ${note}` : note;
+  }
+  const notes: Record<string, string> = { ...itemNotes };
+  if (placeFilter) {
+    for (const apiName of Object.keys(ALOLAN_FORMS)) {
+      const trade = alolanTradeAt(apiName, placeFilter);
+      if (trade) notes[apiName] = `Forme d'Alola par échange (niv. ${trade.level})`;
+    }
   }
 
   const query = normalize(searchTerm.trim());
@@ -498,7 +524,7 @@ function App() {
             {filteredEntries.length === 0 && (
               <p className="status">Aucun Pokémon ne correspond à ces critères.</p>
             )}
-            <PokedexIndex entries={firstHalf} notes={itemNotes} onSelect={handleSelect} />
+            <PokedexIndex entries={firstHalf} notes={notes} onSelect={handleSelect} />
           </>
         )}
         {applicationName && <p className="page-title">{applicationName}</p>}
@@ -519,24 +545,37 @@ function App() {
       </>
     );
   } else {
+    // Forme affichée sur l'illustration : Kanto ou Alola, normale ou chromatique
+    const form = showAlolan && pokemon.alolan ? pokemon.alolan : pokemon;
     leftPage = (
       <PokemonArtCard
-        sprite={showShiny ? pokemon.shinySprite : pokemon.sprite}
-        name={pokemon.name}
-        typeSlugs={pokemon.typeSlugs}
+        sprite={showShiny ? form.shinySprite : form.sprite}
+        name={form.name}
+        typeSlugs={form.typeSlugs}
         nav={
           <>
             <div className="nav-row">
               <button className="close-tab" onClick={backToIndex}>
                 ← Retour à l'index
               </button>
-              <button
-                className={`close-tab shiny-switch ${showShiny ? "on" : ""}`}
-                aria-pressed={showShiny}
-                onClick={() => setShowShiny(!showShiny)}
-              >
-                ✦ {showShiny ? "Chromatique" : "Voir le chromatique"}
-              </button>
+              <div className="art-switches">
+                {pokemon.alolan && (
+                  <button
+                    className={`close-tab alolan-switch ${showAlolan ? "on" : ""}`}
+                    aria-pressed={showAlolan}
+                    onClick={() => setShowAlolan(!showAlolan)}
+                  >
+                    🌴 Alola
+                  </button>
+                )}
+                <button
+                  className={`close-tab shiny-switch ${showShiny ? "on" : ""}`}
+                  aria-pressed={showShiny}
+                  onClick={() => setShowShiny(!showShiny)}
+                >
+                  ✦ {showShiny ? "Chromatique" : "Voir le chromatique"}
+                </button>
+              </div>
             </div>
             {pokemon.previousEvolution && (
               <button
@@ -573,7 +612,7 @@ function App() {
           <div className="page page-right">
             {!selectedName
               ? !isLoading && (
-                  <PokedexIndex entries={secondHalf} notes={itemNotes} onSelect={handleSelect} />
+                  <PokedexIndex entries={secondHalf} notes={notes} onSelect={handleSelect} />
                 )
               : pokemon && (
                   <PokemonInfoCard

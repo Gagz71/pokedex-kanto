@@ -121,8 +121,15 @@
 .close-tab.prev-evo {
   margin: 0 0 14px;
 }
+.art-switches {
+  display: flex;
+  gap: 12px;
+}
 .close-tab.shiny-switch.on {
   color: #9a5cc8;
+}
+.art-nav .close-tab.alolan-switch.on {
+  color: #2f9ec4;
 }
 
 /* Pastille d'état : grise hors connexion, verte synchronisé, orange en

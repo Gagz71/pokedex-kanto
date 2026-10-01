@@ -30,7 +30,8 @@ s'empilent.
 - **Recherche** par nom (accents facultatifs : « evoli » trouve Évoli) ou par numéro.
 - **Type** : les 18 types, avec leur couleur.
 - **Statut** : vus, capturés, chromatiques, ceux qui ont évolué, les
-  **exclusifs Let's Go Pikachu / Évoli**, les légendaires et fabuleux.
+  **exclusifs Let's Go Pikachu / Évoli**, les légendaires et fabuleux, ceux
+  qui ont une **forme d'Alola**.
 - **Lieu** : tous les Pokémon d'une ville, d'une route ou d'une grotte.
 - **Objet** : à qui sert une Pierre Feu, Eau, Foudre, Plante ou Lune, ou les
   Bonbons Meltan.
@@ -40,8 +41,8 @@ s'empilent.
 ### 🗂️ Une fiche en six onglets
 | Onglet | Contenu |
 |---|---|
-| **Accueil** | N° de Kanto, catégorie, texte du Pokédex de Let's Go, taille, poids, sexe, taux de capture, exclusivité de version |
-| **Stats** | Stats de base, ou celles de ton Pokémon que tu recopies depuis le jeu |
+| **Accueil** | N° de Kanto, catégorie, texte du Pokédex de Let's Go, taille, poids, sexe, taux de capture, exclusivité de version, et la **forme d'Alola** avec la façon de l'obtenir |
+| **Stats** | Stats de base (Kanto et Alola), ou celles de ton Pokémon que tu recopies depuis le jeu |
 | **Type** | Faiblesses, résistances, immunités et types contre lesquels il est fort |
 | **Évolution** | La lignée complète et comment évoluer (niveau, pierre, échange…) |
 | **Lieux** | La carte de Kanto avec ses lieux de rencontre, et pour chacun les étages, les niveaux et le mode de rencontre |
@@ -52,7 +53,14 @@ s'empilent.
 - **Mon équipe** : 6 places, comme dans le jeu.
 - **Faire évoluer** un Pokémon capturé, en un clic.
 - **Niveau et stats** de tes Pokémon.
-- L'**illustration chromatique** de chaque Pokémon.
+- L'**illustration chromatique** de chaque Pokémon, et celle de sa **forme
+  d'Alola**.
+
+### 🌴 Les formes d'Alola
+Dans Let's Go, on les obtient par échange avec des personnages du jeu. La
+fiche indique où (sur la carte aussi), quel Pokémon donner et à quel niveau
+on le reçoit, ou comment faire évoluer la forme d'Alola. Elle prévient quand
+l'échange n'existe que dans Let's Go Évoli (Goupix et Miaouss).
 
 ### ☁️ Partout, même hors ligne
 - **Synchronisation** entre téléphone, tablette et ordinateur, avec le même
@@ -118,6 +126,8 @@ jour : `node scripts/fetch-encounters.mjs`.
 
 - Données, lieux de rencontre, textes du Pokédex et illustrations :
   [PokeAPI](https://pokeapi.co).
+- Échanges de formes d'Alola : [Bulbapedia](https://bulbapedia.bulbagarden.net)
+  (licence [CC BY-NC-SA 2.5](https://creativecommons.org/licenses/by-nc-sa/2.5/deed.fr)).
 - Carte de Kanto de Let's Go : [Poképédia](https://www.pokepedia.fr)
   (licence [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/deed.fr)).
 

@@ -8,6 +8,7 @@ export interface EvolutionItemUse {
   to: string; // apiName de l'évolution
   toName: string; // nom affiché de l'évolution
   note?: string; // condition en plus
+  alolan?: boolean; // concerne la forme d'Alola (voir alolanForms.ts)
 }
 
 export interface EvolutionItem {
@@ -87,6 +88,28 @@ export const EVOLUTION_ITEMS: Record<string, EvolutionItem> = {
       { from: "jigglypuff", to: "wigglytuff", toName: "Grodoudou" },
     ],
   },
+  "ice-stone": {
+    name: "Pierre Glace",
+    category: "Pierres",
+    description: `${STONE_DESCRIPTION} Un flocon de neige semble dessiné dessus.`,
+    sprite: ITEM_SPRITE("ice-stone"),
+    uses: [
+      {
+        from: "sandshrew",
+        to: "sandslash",
+        toName: "Sablaireau",
+        note: "formes d'Alola",
+        alolan: true,
+      },
+      {
+        from: "vulpix",
+        to: "ninetales",
+        toName: "Feunard",
+        note: "formes d'Alola",
+        alolan: true,
+      },
+    ],
+  },
   "meltan-candy": {
     name: "Bonbon Meltan",
     category: "Objets spéciaux",
@@ -104,11 +127,11 @@ export const EVOLUTION_ITEMS: Record<string, EvolutionItem> = {
   },
 };
 
-// Objet d'évolution entre deux Pokémon, s'il y en a un.
+// Objet d'évolution entre deux Pokémon (formes de Kanto), s'il y en a un.
 export function findItemUse(from: string | undefined, to: string) {
   if (!from) return undefined;
   for (const [slug, item] of Object.entries(EVOLUTION_ITEMS)) {
-    const use = item.uses.find((u) => u.from === from && u.to === to);
+    const use = item.uses.find((u) => u.from === from && u.to === to && !u.alolan);
     if (use) return { slug, name: item.name, note: use.note };
   }
   return undefined;

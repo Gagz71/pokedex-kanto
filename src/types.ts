@@ -1,4 +1,5 @@
 import type { Encounter } from "./data/kantoEncounters";
+import type { AlolanForm } from "./data/alolanForms";
 
 // Version de Let's Go où un Pokémon est exclusif (voir data/exclusives.ts)
 export type Exclusive = "pikachu" | "eevee" | null;
@@ -47,6 +48,20 @@ export interface MoveInfo {
   level: number;
 }
 
+// Forme d'Alola d'un Pokémon (voir data/alolanForms.ts)
+export interface AlolanData {
+  name: string; // « Rattata d'Alola »
+  sprite: string;
+  shinySprite: string;
+  typeSlugs: string[];
+  stats: { name: string; value: number }[];
+  height: number;
+  weight: number;
+  source: AlolanForm;
+  evolvesFromName?: string; // nom de la pré-évolution d'Alola
+  inPikachu: boolean; // obtenable dans Let's Go Pikachu sans autre joueur
+}
+
 // Tout ce que la fiche d'un Pokémon affiche
 export interface PokemonData {
   apiName: string;
@@ -76,4 +91,5 @@ export interface PokemonData {
   strengths: TypeMatchup[];
   locations: Encounter[];
   moves: MoveInfo[];
+  alolan: AlolanData | null;
 }

@@ -3,7 +3,8 @@
 // carte du jeu (public/kanto-map.jpg, 1024 × 724 px, récupérée sur
 // Poképédia : Fichier:Kanto_LGPE.png). x / y en pixels de l'image, placés à
 // l'œil sur la carte.
-// Les rencontres de chaque Pokémon sont dans kantoEncounters.ts (généré).
+// Les rencontres de chaque Pokémon sont dans kantoEncounters.ts (généré),
+// les échanges de formes d'Alola dans alolanForms.ts.
 
 export type PlaceKind = "ville" | "route" | "lieu";
 
@@ -25,6 +26,11 @@ export const KANTO_PLACES: Record<string, KantoPlace> = {
   "vermilion-city": { name: "Carmin sur Mer", kind: "ville", x: 640, y: 392 },
   "saffron-city": { name: "Safrania", kind: "ville", x: 662, y: 250 },
   "cinnabar-island": { name: "Cramois'Île", kind: "ville", x: 238, y: 672 },
+  // Villes sans Pokémon sauvage, mais avec un échange de forme d'Alola
+  "celadon-city": { name: "Céladopole", kind: "ville", x: 476, y: 248 },
+  "lavender-town": { name: "Lavanville", kind: "ville", x: 886, y: 262 },
+  "fuchsia-city": { name: "Parmanie", kind: "ville", x: 505, y: 548 },
+  "indigo-plateau": { name: "Plateau Indigo", kind: "ville", x: 125, y: 30 },
 
   // Routes
   "kanto-route-1": { name: "Route 1", kind: "route", x: 250, y: 400 },

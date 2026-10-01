@@ -26,6 +26,21 @@ function CreditsPanel({ onClose }: CreditsPanelProps) {
           illustrations officielles.
         </li>
         <li>
+          <a href="https://bulbapedia.bulbagarden.net" target="_blank" rel="noopener">
+            Bulbapedia
+          </a>{" "}
+          — échanges de formes d'Alola et règles d'évolution propres à Let's
+          Go. Contenu sous licence{" "}
+          <a
+            href="https://creativecommons.org/licenses/by-nc-sa/2.5/deed.fr"
+            target="_blank"
+            rel="noopener"
+          >
+            CC BY-NC-SA 2.5
+          </a>
+          .
+        </li>
+        <li>
           <a href="https://www.pokepedia.fr" target="_blank" rel="noopener">
             Poképédia
           </a>{" "}

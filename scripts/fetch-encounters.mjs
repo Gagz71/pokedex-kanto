@@ -29,7 +29,7 @@ const getJson = async (url) => {
 };
 const fr = (names) => names.find((n) => n.language.name === "fr")?.name ?? "";
 const simplify = (s) =>
-  s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
 const dex = await getJson(`${API}/pokedex/letsgo-kanto`);
 const areaCache = new Map();

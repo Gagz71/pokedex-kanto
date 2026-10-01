@@ -1,4 +1,5 @@
 import type {
+  AlolanData,
   EvolutionInfo,
   EvolutionStage,
   EvoLink,
@@ -12,6 +13,7 @@ import { findItemUse } from "../data/evolutionItems";
 import { getExclusive } from "../data/exclusives";
 import { DAMAGE_CLASS_LABELS, STAT_LABELS } from "../data/labels";
 import { KANTO_ENCOUNTERS } from "../data/kantoEncounters";
+import { ALOLAN_FORMS, isAlolanInPikachu } from "../data/alolanForms";
 
 const API = "https://pokeapi.co/api/v2";
 const LETS_GO_GROUP = "lets-go-pikachu-lets-go-eevee";
@@ -351,6 +353,35 @@ async function fetchMoves(pokemon: ApiPokemon): Promise<MoveInfo[]> {
     );
 }
 
+// Forme d'Alola : variante PokeAPI `${apiName}-alola`
+async function fetchAlolan(
+  apiName: string,
+  name: string,
+  index: PokedexEntry[],
+): Promise<AlolanData | null> {
+  const source = ALOLAN_FORMS[apiName];
+  if (!source) return null;
+  const pokemon = await getJson<ApiPokemon>(`${API}/pokemon/${apiName}-alola`);
+  const from = source.evolvesFrom?.apiName;
+  return {
+    name: `${name} d'Alola`,
+    sprite: artworkUrl(pokemon.id),
+    shinySprite: artworkUrl(pokemon.id, true),
+    typeSlugs: pokemon.types.map((t) => t.type.name),
+    stats: pokemon.stats.map((s) => ({
+      name: STAT_LABELS[s.stat.name] ?? s.stat.name,
+      value: s.base_stat,
+    })),
+    height: pokemon.height / 10,
+    weight: pokemon.weight / 10,
+    source,
+    evolvesFromName: from
+      ? `${index.find((e) => e.apiName === from)?.name ?? from} d'Alola`
+      : undefined,
+    inPikachu: isAlolanInPikachu(apiName),
+  };
+}
+
 export async function fetchPokemon(
   apiName: string,
   index: PokedexEntry[],
@@ -364,17 +395,19 @@ export async function fetchPokemon(
   // Tant que l'index n'est pas chargé, on ne filtre pas la lignée.
   const inDex = (name: string) => dexNames.size === 0 || dexNames.has(name);
 
-  const [typeResponses, evolution, moves] = await Promise.all([
+  const name = getFrenchName(species.names);
+  const [typeResponses, evolution, moves, alolan] = await Promise.all([
     Promise.all(pokemon.types.map((t) => getJson<ApiType>(t.type.url))),
     fetchEvolutions(species.evolution_chain.url, apiName, inDex),
     fetchMoves(pokemon),
+    fetchAlolan(apiName, name, index),
   ]);
 
   const entry = index.find((e) => e.apiName === apiName);
 
   return {
     apiName,
-    name: getFrenchName(species.names),
+    name,
     sprite: artworkUrl(species.id),
     shinySprite: artworkUrl(species.id, true),
     typeSlugs: pokemon.types.map((t) => t.type.name),
@@ -398,5 +431,6 @@ export async function fetchPokemon(
     // Lieux de rencontre : données générées (scripts/fetch-encounters.mjs)
     locations: KANTO_ENCOUNTERS[apiName] ?? [],
     moves,
+    alolan,
   };
 }
