@@ -602,41 +602,49 @@ function App() {
   }
 
   return (
-    <div className="scene">
-      <div
-        className={`book ${isOpen ? "open" : ""} ${selectedName ? "has-pokemon" : ""}`}
-      >
-        <div className="page page-left">{leftPage}</div>
+    <>
+      {/* Retour au portail « Pokédex MDS » (racine du site), qui regroupe les modules */}
+      <nav className="portal-nav">
+        <a className="portal-link" href="/">
+          ← Tous les Pokédex
+        </a>
+      </nav>
+      <div className="scene">
+        <div
+          className={`book ${isOpen ? "open" : ""} ${selectedName ? "has-pokemon" : ""}`}
+        >
+          <div className="page page-left">{leftPage}</div>
 
-        <div className="page-right-mask">
-          <div className="page page-right">
-            {!selectedName
-              ? !isLoading && (
-                  <PokedexIndex entries={secondHalf} notes={notes} onSelect={handleSelect} />
-                )
-              : pokemon && (
-                  <PokemonInfoCard
-                    key={pokemon.apiName}
-                    pokemon={pokemon}
-                    view={infoView}
-                    onChangeView={setInfoView}
-                    onSelect={handleSelect}
-                    onFilterType={handleTypeFilter}
-                    onFilterItem={handleItemFilter}
-                    onFilterPlace={handlePlaceFilter}
-                  />
-                )}
+          <div className="page-right-mask">
+            <div className="page page-right">
+              {!selectedName
+                ? !isLoading && (
+                    <PokedexIndex entries={secondHalf} notes={notes} onSelect={handleSelect} />
+                  )
+                : pokemon && (
+                    <PokemonInfoCard
+                      key={pokemon.apiName}
+                      pokemon={pokemon}
+                      view={infoView}
+                      onChangeView={setInfoView}
+                      onSelect={handleSelect}
+                      onFilterType={handleTypeFilter}
+                      onFilterItem={handleItemFilter}
+                      onFilterPlace={handlePlaceFilter}
+                    />
+                  )}
+            </div>
           </div>
+
+          <div className="spine"></div>
+
+          <BookCover isOpen={isOpen} onToggle={() => setIsOpen(!isOpen)} />
         </div>
 
-        <div className="spine"></div>
-
-        <BookCover isOpen={isOpen} onToggle={() => setIsOpen(!isOpen)} />
+        {isCreditsOpen && <CreditsPanel onClose={() => setIsCreditsOpen(false)} />}
+        {isSyncOpen && <SyncPanel onClose={() => setIsSyncOpen(false)} />}
       </div>
-
-      {isCreditsOpen && <CreditsPanel onClose={() => setIsCreditsOpen(false)} />}
-      {isSyncOpen && <SyncPanel onClose={() => setIsSyncOpen(false)} />}
-    </div>
+    </>
   );
 }
 

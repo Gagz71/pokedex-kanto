@@ -125,12 +125,16 @@ export async function signIn(email: string, password: string) {
   if (error) throw error;
 }
 
+// Adresse de l'appli pour les liens des e-mails (confirmation, mot de passe
+// oublié) : sous /kanto/, pas à la racine du site.
+const APP_URL = window.location.origin + import.meta.env.BASE_URL;
+
 // Renvoie true si l'adresse doit d'abord être confirmée par e-mail.
 export async function signUp(email: string, password: string): Promise<boolean> {
   const { data, error } = await client().auth.signUp({
     email,
     password,
-    options: { emailRedirectTo: window.location.origin },
+    options: { emailRedirectTo: APP_URL },
   });
   if (error) throw error;
   return !data.session;
@@ -138,7 +142,7 @@ export async function signUp(email: string, password: string): Promise<boolean> 
 
 export async function requestPasswordReset(email: string) {
   const { error } = await client().auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin,
+    redirectTo: APP_URL,
   });
   if (error) throw error;
 }

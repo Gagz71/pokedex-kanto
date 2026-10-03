@@ -14,7 +14,7 @@ function BookCover({ isOpen, onToggle }: BookCoverProps) {
       </div>
       <div className="hero">
         <div className="pokeball-ring">
-          <img className="pokeball" src="/Pokeball1.png" alt="Poké Ball" />
+          <img className="pokeball" src={`${import.meta.env.BASE_URL}Pokeball1.png`} alt="Poké Ball" />
         </div>
         <h1 className="title">Pokédex Kanto</h1>
         <div className="trim"></div>

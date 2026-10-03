@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    { "source": "/", "destination": "/kanto/", "permanent": false },
+    { "source": "/kanto", "destination": "/kanto/", "permanent": false }
+  ],
+  "rewrites": [
+    { "source": "/kanto/", "destination": "/index.html" },
+    { "source": "/kanto/:path+", "destination": "/:path+" }
+  ]
+}

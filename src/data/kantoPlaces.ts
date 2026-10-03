@@ -15,7 +15,7 @@ export interface KantoPlace {
   y: number;
 }
 
-export const MAP_SRC = "/kanto-map.jpg";
+export const MAP_SRC = `${import.meta.env.BASE_URL}kanto-map.jpg`;
 export const MAP_WIDTH = 1024;
 export const MAP_HEIGHT = 724;
 

@@ -6,6 +6,9 @@ const DAY = 24 * 60 * 60;
 
 // https://vite.dev/config/
 export default defineConfig({
+  // L'appli vit sous /kanto/ : c'est un module du portail « Pokédex MDS »
+  // (pokedex-mds.vercel.app), aux côtés du Pokédex Hisui (/hisui/).
+  base: "/kanto/",
   plugins: [
     react(),
     // Application installable (écran d'accueil, plein écran) et utilisable
@@ -19,7 +22,8 @@ export default defineConfig({
         short_name: "Pokédex",
         description: "Pokédex pour Pokémon Let's Go, Pikachu !",
         lang: "fr",
-        start_url: "/",
+        start_url: "/kanto/",
+        scope: "/kanto/",
         display: "standalone",
         background_color: "#c1272d",
         theme_color: "#c1272d",
