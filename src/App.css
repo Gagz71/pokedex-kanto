@@ -195,6 +195,24 @@
   gap: 8px;
   margin-bottom: 10px;
 }
+.reset-filters {
+  align-self: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px dashed var(--border);
+  background: none;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.reset-filters:hover {
+  border-style: solid;
+  border-color: var(--accent);
+  color: var(--accent);
+}
 .search-input {
   flex: 1 1 140px;
   border: 1px solid var(--border);

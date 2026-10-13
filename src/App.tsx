@@ -217,11 +217,40 @@ function App() {
       });
   }
 
-  // Retour à l'index : on repart d'une recherche vide (les filtres, eux,
-  // sont gardés).
+  const hasActiveFilters = !!(
+    searchTerm ||
+    typeFilter ||
+    statusFilter ||
+    placeFilter ||
+    itemFilter
+  );
+
+  // Tous les filtres et la recherche à zéro.
+  function resetFilters() {
+    setSearchTerm("");
+    setTypeFilter(null);
+    setStatusFilter(null);
+    setPlaceFilter(null);
+    setItemFilter(null);
+  }
+
+  // Retour à l'index : filtres et recherche restent en place, on retrouve la
+  // liste telle qu'on l'avait laissée (« ↺ Réinitialiser » pour tout effacer).
   function backToIndex() {
     setSelectedName(null);
-    setSearchTerm("");
+  }
+
+  // Fermer le livre remet tout à zéro : à la réouverture, on retombe sur
+  // l'index complet, trié par numéro, en haut de la liste.
+  function closeBook() {
+    setIsOpen(false);
+    setSelectedName(null);
+    resetFilters();
+    setSort("number", "asc");
+    setIsCreditsOpen(false);
+    setIsSyncOpen(false);
+    document.querySelectorAll(".entry-list").forEach((list) => (list.scrollTop = 0));
+    window.scrollTo(0, 0);
   }
 
   // Depuis l'onglet Type d'une fiche : retour à l'index filtré sur le type
@@ -483,6 +512,16 @@ function App() {
           );
         }}
       </Menu>
+
+      {hasActiveFilters && (
+        <button
+          className="reset-filters"
+          title="Réinitialiser tous les filtres et la recherche"
+          onClick={resetFilters}
+        >
+          ↺ Réinitialiser
+        </button>
+      )}
     </div>
   );
 
@@ -496,7 +535,7 @@ function App() {
               <span className="sync-dot"></span>
               {syncState.user ? "Synchronisé" : "Synchroniser mes appareils"}
             </button>
-            <button className="close-tab" onClick={() => setIsOpen(false)}>
+            <button className="close-tab" onClick={closeBook}>
               ✕ Fermer le livre
             </button>
           </div>
@@ -651,7 +690,7 @@ function App() {
 
           <div className="spine"></div>
 
-          <BookCover isOpen={isOpen} onToggle={() => setIsOpen(!isOpen)} />
+          <BookCover isOpen={isOpen} onToggle={() => (isOpen ? closeBook() : setIsOpen(true))} />
         </div>
 
         {isCreditsOpen && <CreditsPanel onClose={() => setIsCreditsOpen(false)} />}
