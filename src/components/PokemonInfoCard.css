@@ -857,10 +857,33 @@ button.evo-final-poke:hover {
   flex-direction: column;
   gap: 4px;
 }
+.alolan-open {
+  flex-shrink: 0;
+  align-self: flex-start;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.alolan-open:hover {
+  transform: scale(1.06);
+}
 .alolan-name {
+  align-self: flex-start;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
   font-size: 18px;
   font-weight: 800;
   color: #1a1a1a;
+  text-align: left;
+  cursor: pointer;
+}
+.alolan-name:hover {
+  color: #2f9ec4;
+  text-decoration: underline;
 }
 .alolan-types {
   display: flex;

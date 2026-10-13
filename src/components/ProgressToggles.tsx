@@ -15,10 +15,11 @@ import {
 import "./ProgressToggles.css";
 
 interface ProgressTogglesProps {
-  apiName: string;
+  apiName: string; // clé de suivi de la forme affichée (voir alolanKey)
   name: string;
   sprite: string;
   evolutions: EvoLink[]; // évolutions directes
+  shinyView: boolean; // l'illustration montre le chromatique
   onSelect: (apiName: string) => void;
 }
 
@@ -28,10 +29,23 @@ const TOGGLES: { flag: PokemonFlag; label: string; icon: string; title: string }
   { flag: "shiny", label: "Chroma", icon: "✦", title: "Chromatique capturé" },
 ];
 
+// Devant l'illustration chromatique, un seul bouton : ai-je capturé CE
+// chromatique ? (avoir le Pokémon normal ne compte pas)
+const SHINY_TOGGLES: typeof TOGGLES = [
+  { flag: "shiny", label: "Chromatique capturé", icon: "✦", title: "Chromatique capturé" },
+];
+
 // Suivi de la partie sous l'illustration : vu / capturé / chromatique,
 // équipe et évolution. App lui donne key={apiName} : changer de Pokémon
-// repart d'un état neuf (lastEvolution).
-function ProgressToggles({ apiName, name, sprite, evolutions, onSelect }: ProgressTogglesProps) {
+// (ou de forme) repart d'un état neuf (lastEvolution).
+function ProgressToggles({
+  apiName,
+  name,
+  sprite,
+  evolutions,
+  shinyView,
+  onSelect,
+}: ProgressTogglesProps) {
   const progress = useProgress();
   const state = getPokemon(apiName);
   const inTeam = teamCount(apiName);
@@ -46,8 +60,8 @@ function ProgressToggles({ apiName, name, sprite, evolutions, onSelect }: Progre
 
   return (
     <div className="progress-panel">
-      <div className="progress-toggles">
-        {TOGGLES.map((t) => (
+      <div className={`progress-toggles ${shinyView ? "single" : ""}`}>
+        {(shinyView ? SHINY_TOGGLES : TOGGLES).map((t) => (
           <button
             key={t.flag}
             className={`toggle ${t.flag} ${state[t.flag] ? "on" : ""}`}

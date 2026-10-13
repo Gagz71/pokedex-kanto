@@ -1,6 +1,7 @@
 import {
   getPokemon,
   removeFromTeam,
+  speciesOf,
   toggleMemberShiny,
   useProgress,
   TEAM_SIZE,
@@ -34,7 +35,7 @@ function TeamStrip({ onSelect }: TeamStripProps) {
                 <button
                   className="slot-open"
                   title={`Ouvrir la fiche de ${m.name}`}
-                  onClick={() => onSelect(m.apiName)}
+                  onClick={() => onSelect(speciesOf(m.apiName))}
                 >
                   <img src={m.sprite} alt={m.name} />
                   <span className="slot-name">{m.name}</span>

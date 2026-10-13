@@ -123,6 +123,20 @@ export function isTeamFull(): boolean {
   return data.team.members.length >= TEAM_SIZE;
 }
 
+// Une forme d'Alola a son propre suivi (vu / capturé / chromatique, équipe),
+// rangé sous la clé `${apiName}-alola` : capturer un Rattata ne veut pas dire
+// qu'on a aussi le Rattata d'Alola.
+const ALOLAN_SUFFIX = "-alola";
+
+export function alolanKey(apiName: string): string {
+  return apiName + ALOLAN_SUFFIX;
+}
+
+// Espèce d'une clé de suivi (« rattata-alola » → « rattata »), pour ouvrir sa fiche.
+export function speciesOf(key: string): string {
+  return key.endsWith(ALOLAN_SUFFIX) ? key.slice(0, -ALOLAN_SUFFIX.length) : key;
+}
+
 // --- Écriture
 
 function setPokemon(entries: Record<string, PokemonState>) {

@@ -1,7 +1,7 @@
 import type { PokedexEntry } from "../types";
 import { TYPE_COLORS, TYPE_LABELS } from "../data/types";
 import { EXCLUSIVE_LABELS } from "../data/exclusives";
-import { getPokemon, useProgress } from "../stores/progress";
+import { alolanKey, getPokemon, useProgress } from "../stores/progress";
 import "./PokedexIndex.css";
 
 interface PokedexIndexProps {
@@ -55,6 +55,11 @@ function PokedexIndex({ entries, notes, onSelect }: PokedexIndexProps) {
               {progress.shiny && (
                 <span className="entry-shiny" title="Chromatique capturé">
                   ✦
+                </span>
+              )}
+              {getPokemon(alolanKey(entry.apiName)).caught && (
+                <span className="entry-alolan" title="Forme d'Alola capturée">
+                  🌴
                 </span>
               )}
               {progress.evolved && (

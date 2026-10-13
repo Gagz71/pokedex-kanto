@@ -7,7 +7,7 @@ import { EVOLUTION_ITEMS } from "./data/evolutionItems";
 import { KANTO_PLACES, PLACE_GROUPS } from "./data/kantoPlaces";
 import { KANTO_ENCOUNTERS } from "./data/kantoEncounters";
 import { ALOLAN_FORMS } from "./data/alolanForms";
-import { getPokemon, statTotal, useProgress } from "./stores/progress";
+import { alolanKey, getPokemon, statTotal, useProgress } from "./stores/progress";
 import { useSync } from "./stores/sync";
 import BookCover from "./components/BookCover";
 import PokedexIndex from "./components/PokedexIndex";
@@ -190,6 +190,13 @@ function App() {
   }, []);
 
   // --- Navigation
+
+  // Depuis l'encadré « Forme d'Alola » / « Forme de Kanto » de la fiche :
+  // l'illustration change de forme (en haut de page sur téléphone).
+  function showForm(alolan: boolean) {
+    setShowAlolan(alolan);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
   function handleSelect(apiName: string) {
     const request = ++requestRef.current;
@@ -547,6 +554,9 @@ function App() {
   } else {
     // Forme affichée sur l'illustration : Kanto ou Alola, normale ou chromatique
     const form = showAlolan && pokemon.alolan ? pokemon.alolan : pokemon;
+    // Le suivi (vu / capturé / chromatique) est celui de la forme affichée
+    const isAlolan = form !== pokemon;
+    const progressKey = isAlolan ? alolanKey(pokemon.apiName) : pokemon.apiName;
     leftPage = (
       <PokemonArtCard
         sprite={showShiny ? form.shinySprite : form.sprite}
@@ -589,11 +599,12 @@ function App() {
         }
         footer={
           <ProgressToggles
-            key={pokemon.apiName}
-            apiName={pokemon.apiName}
-            name={pokemon.name}
-            sprite={pokemon.sprite}
-            evolutions={pokemon.evolutions}
+            key={progressKey}
+            apiName={progressKey}
+            name={form.name}
+            sprite={form.sprite}
+            evolutions={isAlolan ? [] : pokemon.evolutions}
+            shinyView={showShiny}
             onSelect={handleSelect}
           />
         }
@@ -628,6 +639,8 @@ function App() {
                       view={infoView}
                       onChangeView={setInfoView}
                       onSelect={handleSelect}
+                      alolanView={showAlolan}
+                      onShowAlolan={showForm}
                       onFilterType={handleTypeFilter}
                       onFilterItem={handleItemFilter}
                       onFilterPlace={handlePlaceFilter}

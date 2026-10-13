@@ -32,6 +32,8 @@ interface PokemonInfoCardProps {
   view: InfoView;
   onChangeView: (view: InfoView) => void;
   onSelect: (apiName: string) => void;
+  alolanView: boolean; // l'illustration montre la forme d'Alola
+  onShowAlolan: (show: boolean) => void; // change la forme de l'illustration
   onFilterType: (slug: string) => void;
   onFilterItem: (slug: string) => void;
   onFilterPlace: (slug: string) => void;
@@ -70,6 +72,8 @@ function PokemonInfoCard({
   view,
   onChangeView,
   onSelect,
+  alolanView,
+  onShowAlolan,
   onFilterType,
   onFilterItem,
   onFilterPlace,
@@ -253,8 +257,44 @@ function PokemonInfoCard({
                 <p className="dex-text">{pokemon.description}</p>
               </div>
 
-              {pokemon.alolan && (
-                <AlolanBlock alolan={pokemon.alolan} kantoName={pokemon.name}>
+              {pokemon.alolan && alolanView && (
+                <div className="alolan-block">
+                  <button
+                    className="alolan-open"
+                    title={`Voir ${pokemon.name}`}
+                    onClick={() => onShowAlolan(false)}
+                  >
+                    <img src={pokemon.sprite} alt={pokemon.name} />
+                  </button>
+                  <div className="alolan-text">
+                    <span className="fact-label">Forme de Kanto</span>
+                    <button className="alolan-name" onClick={() => onShowAlolan(false)}>
+                      {pokemon.name} <span aria-hidden="true">→</span>
+                    </button>
+                    <div className="alolan-types">
+                      {pokemon.typeSlugs.map((slug) => (
+                        <span
+                          key={slug}
+                          className="move-type-badge"
+                          style={{ background: TYPE_COLORS[slug] }}
+                        >
+                          {TYPE_LABELS[slug]}
+                        </span>
+                      ))}
+                    </div>
+                    <p className="alolan-note">
+                      La forme d'origine de {pokemon.alolan.name} : même numéro de
+                      Pokédex, mais un suivi à part.
+                    </p>
+                  </div>
+                </div>
+              )}
+              {pokemon.alolan && !alolanView && (
+                <AlolanBlock
+                  alolan={pokemon.alolan}
+                  kantoName={pokemon.name}
+                  onOpen={() => onShowAlolan(true)}
+                >
                   {pokemon.alolan.source.evolvesFrom?.itemSlug &&
                     itemCondition(
                       pokemon.alolan.source.evolvesFrom.condition,
@@ -609,14 +649,17 @@ function PokemonInfoCard({
 
 // Bloc « Forme d'Alola » de l'onglet Accueil : illustration, types et
 // comment l'obtenir dans Let's Go Pikachu. children : condition d'évolution
-// avec lien vers l'objet (Pierre Glace), quand il y en a une.
+// avec lien vers l'objet (Pierre Glace), quand il y en a une. L'illustration
+// et le nom ouvrent la vue Alola (pas tout le bloc : il contient déjà un lien).
 function AlolanBlock({
   alolan,
   kantoName,
+  onOpen,
   children,
 }: {
   alolan: AlolanData;
   kantoName: string;
+  onOpen: () => void;
   children?: ReactNode;
 }) {
   const { trade, evolvesFrom } = alolan.source;
@@ -649,10 +692,14 @@ function AlolanBlock({
 
   return (
     <div className="alolan-block">
-      <img src={alolan.sprite} alt={alolan.name} />
+      <button className="alolan-open" title={`Voir ${alolan.name}`} onClick={onOpen}>
+        <img src={alolan.sprite} alt={alolan.name} />
+      </button>
       <div className="alolan-text">
         <span className="fact-label">Forme d'Alola</span>
-        <span className="alolan-name">{alolan.name}</span>
+        <button className="alolan-name" onClick={onOpen}>
+          {alolan.name} <span aria-hidden="true">→</span>
+        </button>
         <div className="alolan-types">
           {alolan.typeSlugs.map((slug) => (
             <span key={slug} className="move-type-badge" style={{ background: TYPE_COLORS[slug] }}>
@@ -662,8 +709,8 @@ function AlolanBlock({
         </div>
         <p className="alolan-how">{how}</p>
         <p className="alolan-note">
-          Même numéro de Pokédex que {kantoName} : une seule case à cocher pour
-          les deux formes.
+          Même numéro de Pokédex que {kantoName}, mais un suivi à part : touche
+          son illustration pour le cocher.
         </p>
       </div>
     </div>
